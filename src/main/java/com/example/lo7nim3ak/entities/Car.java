@@ -19,10 +19,20 @@ public class Car {
     private Integer number_of_seats;
     private String color;
     private String licence_plate;
-
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "id_user")
     private User user;
+
+    public void update(Car entity) {
+        this.manufacturer = entity.getManufacturer();
+        this.model = entity.getModel();
+        this.licence_plate = entity.getLicence_plate();
+        this.color = entity.getColor();
+        this.number_of_seats = entity.getNumber_of_seats();
+    }
+
+
+
 
 }
