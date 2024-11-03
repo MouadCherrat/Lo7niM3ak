@@ -12,35 +12,35 @@ import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1/drives")
+@RequestMapping("/api/v1")
 @CrossOrigin(value = "*")
 public class DriveController {
     private final DriveService driveService;
-    @PostMapping("")
+    @PostMapping("/documents")
     public ResponseDrive addDrive(@RequestBody RequestDrive request) {
         return driveService.createDrive(request);
     }
-    @GetMapping("")
+    @GetMapping("/documents")
     public List<ResponseDrive> listDrives() {
         return driveService.getAllDrives();
     }
-    @PutMapping("editDrive")
+    @PutMapping("/editDrive")
     public void editDrive(@RequestBody Drive drive) {
         driveService.updateDrive(drive);
     }
-    @DeleteMapping("deleteDrive/{id}")
+    @DeleteMapping("/deleteDrive/{id}")
     public void deleteDrive(@PathVariable Long id) {
         driveService.deleteDrive(id);
     }
-    @GetMapping("findDriveById/{id}")
+    @GetMapping("/findDriveById/{id}")
     public Optional<Drive> findDriveById(@PathVariable Long id) {
         return driveService.findById(id);
     }
-    @GetMapping("findDriveByAccountId/{id}")
+    @GetMapping("/findDriveByAccountId/{id}")
     public Optional<Drive> findDriveByUserId(@PathVariable Long id) {
         return driveService.findByUserId(id);
     }
-    @GetMapping("findListDriveByUserId/{id}")
+    @GetMapping("/findListDriveByUserId/{id}")
     public Optional<Drive> findAllDriveByUserId(@PathVariable Long id) {
         return driveService.findAllByUserId(id);
     }
