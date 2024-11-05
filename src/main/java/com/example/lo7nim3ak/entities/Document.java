@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-
 public class Document {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

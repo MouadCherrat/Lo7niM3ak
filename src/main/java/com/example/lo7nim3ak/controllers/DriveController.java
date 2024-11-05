@@ -16,11 +16,11 @@ import java.util.Optional;
 @CrossOrigin(value = "*")
 public class DriveController {
     private final DriveService driveService;
-    @PostMapping("/documents")
+    @PostMapping("/drives")
     public ResponseDrive addDrive(@RequestBody RequestDrive request) {
         return driveService.createDrive(request);
     }
-    @GetMapping("/documents")
+    @GetMapping("/drives")
     public List<ResponseDrive> listDrives() {
         return driveService.getAllDrives();
     }

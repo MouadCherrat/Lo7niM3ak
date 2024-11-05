@@ -1,5 +1,6 @@
 package com.example.lo7nim3ak.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -18,6 +19,6 @@ public class Review {
     private String message;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "user_id")
-    @JsonIgnore
+    @JsonBackReference
     private User user;
 }
