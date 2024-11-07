@@ -17,7 +17,6 @@ import java.util.Optional;
 import java.util.stream.Stream;
 
 @Service
-@Transactional
 @AllArgsConstructor
 public class DriveService {
     private final DriveRepository driveRepository;

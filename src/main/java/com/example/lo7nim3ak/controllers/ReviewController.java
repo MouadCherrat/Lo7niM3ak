@@ -1,6 +1,8 @@
 package com.example.lo7nim3ak.controllers;
 
+import com.example.lo7nim3ak.entities.Reservation;
 import com.example.lo7nim3ak.entities.Review;
+import com.example.lo7nim3ak.services.ReservationService;
 import com.example.lo7nim3ak.services.ReviewService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +15,7 @@ import java.util.List;
 @RequestMapping("/api/v1/reviews")
 public class ReviewController {
     private final ReviewService reviewService;
+
 
     @PostMapping
     public Review createReview(@RequestBody Review review) {
@@ -35,4 +38,5 @@ public class ReviewController {
     public void deleteReview(@PathVariable Long id){
         reviewService.deleteReview(id);
     }
+
 }

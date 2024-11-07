@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.util.List;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Data
 @NoArgsConstructor
+@ToString
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,14 +29,25 @@ public class User {
     @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Document> documents;
+
+    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Review> reviews;
+
+    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Car> cars;
+
+    @JsonIgnore
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Drive> drives;
+    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservations;
+
 
 
 

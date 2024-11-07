@@ -1,5 +1,7 @@
 package com.example.lo7nim3ak.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,12 +19,16 @@ public class Reservation {
     private Long id;
     @Column(name = "reserved_seats", length = 100)
     private int seats;
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
-    @JoinColumn(name = "id_passenger")
-    private User user;
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "id_drive")
     private Drive drive;
+
+    @JsonBackReference
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_passenger")
+    private User user;
+
     @Column(name = "status", length = 100)
     @Enumerated(value = EnumType.STRING)
     private Status status;
