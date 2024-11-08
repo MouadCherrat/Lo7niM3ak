@@ -90,6 +90,9 @@ public class ReservationService {
     public Reservation cancelReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+        if (reservation.getStatus() == Status.REFUSED || reservation.getStatus() == Status.CANCELED) {
+            throw new IllegalStateException("Reservation is already refused or cancelled");
+        }
 
         Drive drive = reservation.getDrive();
         drive.setSeating(drive.getSeating() + reservation.getSeats());
