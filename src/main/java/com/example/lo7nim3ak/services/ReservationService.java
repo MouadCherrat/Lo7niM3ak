@@ -1,5 +1,6 @@
 package com.example.lo7nim3ak.services;
 
+import com.example.lo7nim3ak.dto.ReservationDto;
 import com.example.lo7nim3ak.entities.*;
 import com.example.lo7nim3ak.repository.BillRepository;
 import com.example.lo7nim3ak.repository.DriveRepository;
@@ -11,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-
 @Service
 @AllArgsConstructor
 public class ReservationService {
@@ -19,29 +19,51 @@ public class ReservationService {
     private final UserRepository userRepository;
     private final DriveRepository driveRepository;
     private final BillRepository billRepository;
+    private final NotificationService notificationService;
 
-    public Reservation createReservation(Reservation reservation) {
-        User user = userRepository.findById(reservation.getUser().getId())
+    public Reservation createReservation(ReservationDto reservationDto) {
+        User user = userRepository.findById(reservationDto.getUserId())
                 .orElseThrow(() -> new IllegalArgumentException("Passenger not found"));
-        Drive drive = driveRepository.findById(reservation.getDrive().getId())
+
+        Drive drive = driveRepository.findById(reservationDto.getDriveId())
                 .orElseThrow(() -> new IllegalArgumentException("Drive not found"));
-        if (reservation.getSeats() > drive.getSeating() || reservation.getSeats() <= 0) {
-            throw new IllegalArgumentException("Nombre de place incorrect!");
+
+        if (reservationDto.getSeats() > drive.getSeating() || reservationDto.getSeats() <= 0) {
+            throw new IllegalArgumentException("Invalid number of seats!");
         }
-        drive.setSeating(drive.getSeating()-reservation.getSeats());
-        reservation.setUser(user);
-        reservation.setDrive(drive);
-        reservation.setStatus(Status.PENDING);
-        return reservationRepository.save(reservation);
+
+        Reservation reservation = Reservation.builder()
+                .seats(reservationDto.getSeats())
+                .user(user)
+                .drive(drive)
+                .status(Status.PENDING)
+                .build();
+
+        reservationRepository.save(reservation);
+
+        // Send email to the driver when the reservation is created
+        notificationService.sendEmail(
+                drive.getUser().getEmail(),
+                "New Reservation Created",
+                "A new reservation has been created with " + reservation.getSeats() + " seats reserved."
+        );
+
+        return reservation;
     }
 
-
     public Reservation acceptReservation(Long reservationId) {
-
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
 
         Drive drive = reservation.getDrive();
+
+        if (reservation.getSeats() > drive.getSeating()) {
+            throw new IllegalArgumentException("Insufficient seats available in the drive for this reservation");
+        }
+
+        drive.setSeating(drive.getSeating() - reservation.getSeats());
+        driveRepository.save(drive);
+
         String ref = UUID.randomUUID().toString().substring(0, 5);
         Bill bill = Bill.builder()
                 .totalAmount(drive.getPrice().multiply(BigDecimal.valueOf(reservation.getSeats())))
@@ -53,8 +75,18 @@ public class ReservationService {
         billRepository.save(bill);
 
         reservation.setStatus(Status.ACCEPTED);
-        return reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
+
+        // Send email to the passenger when reservation is accepted
+        notificationService.sendEmail(
+                reservation.getUser().getEmail(),
+                "Reservation Accepted",
+                "Your reservation has been accepted."
+        );
+
+        return reservation;
     }
+
     public Reservation cancelReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
@@ -62,12 +94,24 @@ public class ReservationService {
         Drive drive = reservation.getDrive();
         drive.setSeating(drive.getSeating() + reservation.getSeats());
         driveRepository.save(drive);
+
         reservation.setStatus(Status.CANCELED);
-        return reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
+
+        // Send email to the driver when reservation is canceled
+        notificationService.sendEmail(
+                drive.getUser().getEmail(),
+                "Reservation Canceled",
+                "A reservation has been canceled. The seats have been restored."
+        );
+
+        return reservation;
     }
-    public Reservation RefuseReservation (Long reservationId) {
+
+    public Reservation refuseReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Reservation not found"));
+
         if (reservation.getStatus() == Status.REFUSED || reservation.getStatus() == Status.CANCELED) {
             throw new IllegalStateException("Reservation is already refused or cancelled");
         }
@@ -75,12 +119,17 @@ public class ReservationService {
         Drive drive = reservation.getDrive();
         drive.setSeating(drive.getSeating() + reservation.getSeats());
         driveRepository.save(drive);
+
         reservation.setStatus(Status.REFUSED);
-        return reservationRepository.save(reservation);
+        reservationRepository.save(reservation);
+
+        // Send email to the passenger when reservation is refused
+        notificationService.sendEmail(
+                reservation.getUser().getEmail(),
+                "Reservation Refused",
+                "Your reservation has been refused."
+        );
+
+        return reservation;
     }
-
-
 }
-
-
-

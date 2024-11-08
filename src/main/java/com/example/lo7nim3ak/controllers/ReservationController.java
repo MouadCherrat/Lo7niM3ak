@@ -1,6 +1,7 @@
 package com.example.lo7nim3ak.controllers;
 
 
+import com.example.lo7nim3ak.dto.ReservationDto;
 import com.example.lo7nim3ak.entities.Reservation;
 import com.example.lo7nim3ak.services.ReservationService;
 import lombok.RequiredArgsConstructor;
@@ -9,28 +10,27 @@ import org.springframework.web.bind.annotation.*;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/reservations")
 public class ReservationController {
     private final ReservationService reservationService;
 
-    @PostMapping("/reservations")
-    public Reservation addReservation(@RequestBody Reservation reservation) {
-        return reservationService.createReservation(reservation);
+    @PostMapping
+    public Reservation addReservation(@RequestBody ReservationDto reservationDto) {
+        return reservationService.createReservation(reservationDto);
     }
 
-    @PostMapping("/{reservationId}/accept")
-    public ResponseEntity<Reservation> acceptReservation(@PathVariable Long reservationId) {
-        Reservation acceptedReservation = reservationService.acceptReservation(reservationId);
-        return ResponseEntity.ok(acceptedReservation);
+    @PutMapping("/accept/{reservationId}")
+    public Reservation acceptReservation(@PathVariable Long reservationId) {
+        return reservationService.acceptReservation(reservationId);
     }
-    @PostMapping("/{reservationId}/cancel")
-    public ResponseEntity<Reservation> cancelReservation(@PathVariable Long reservationId) {
-        Reservation canceledReservation = reservationService.cancelReservation(reservationId);
-        return ResponseEntity.ok(canceledReservation);
+
+    @PutMapping("/refuse/{reservationId}")
+    public Reservation refuseReservation(@PathVariable Long reservationId) {
+        return reservationService.refuseReservation(reservationId);
     }
-    @PostMapping("/{reservationId}/refuse")
-    public ResponseEntity<Reservation> refuseReservation(@PathVariable Long reservationId) {
-        Reservation refusedReservation = reservationService.RefuseReservation(reservationId);
-        return ResponseEntity.ok(refusedReservation);
+
+    @PutMapping("/cancel/{reservationId}")
+    public Reservation cancelReservation(@PathVariable Long reservationId) {
+        return reservationService.cancelReservation(reservationId);
     }
 }

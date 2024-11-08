@@ -19,6 +19,7 @@ public class Reservation {
     private Long id;
     @Column(name = "reserved_seats", length = 100)
     private int seats;
+    
     @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false, name = "id_drive")
