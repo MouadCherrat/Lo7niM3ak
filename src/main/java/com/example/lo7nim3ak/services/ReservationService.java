@@ -6,20 +6,30 @@ import com.example.lo7nim3ak.repository.BillRepository;
 import com.example.lo7nim3ak.repository.DriveRepository;
 import com.example.lo7nim3ak.repository.ReservationRepository;
 import com.example.lo7nim3ak.repository.UserRepository;
+import com.stripe.Stripe;
+import com.stripe.exception.StripeException;
+import com.stripe.model.PaymentIntent;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ReservationService {
     private final ReservationRepository reservationRepository;
     private final UserRepository userRepository;
     private final DriveRepository driveRepository;
     private final BillRepository billRepository;
     private final NotificationService notificationService;
+    @Value("${stripe.key.secret}")
+    private String stripeSecretKey;
 
     public Reservation createReservation(ReservationDto reservationDto) {
         User user = userRepository.findById(reservationDto.getUserId())
@@ -50,6 +60,10 @@ public class ReservationService {
 
         return reservation;
     }
+    public String payBill(Bill bill){
+        billRepository.save(bill);
+        return " Payment succeed";
+    }
 
     public Reservation acceptReservation(Long reservationId) {
         Reservation reservation = reservationRepository.findById(reservationId)
@@ -69,7 +83,7 @@ public class ReservationService {
                 .totalAmount(drive.getPrice().multiply(BigDecimal.valueOf(reservation.getSeats())))
                 .billReference("BILL-".concat(ref))
                 .paid(false)
-                .paymentMethod(PaymentMethod.COD)
+                .paymentMethod(PaymentMethod.STRIPE)
                 .reservation(reservation)
                 .build();
         billRepository.save(bill);
@@ -135,4 +149,48 @@ public class ReservationService {
 
         return reservation;
     }
+    public Map<String, String> createPaymentIntent(Long billId) throws StripeException {
+        Stripe.apiKey = stripeSecretKey;
+
+        Bill bill = billRepository.findById(billId)
+                .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+
+        Map<String, Object> params = new HashMap<>();
+        params.put("amount", bill.getTotalAmount().multiply(BigDecimal.valueOf(100)).intValue()); // Convert to cents
+        params.put("currency", "usd");
+        params.put("description", "Payment for Reservation ID: " + bill.getReservation().getId());
+        params.put("payment_method_types", List.of("card"));
+
+        PaymentIntent paymentIntent = PaymentIntent.create(params);
+
+        Map<String, String> response = new HashMap<>();
+        response.put("id", paymentIntent.getId());
+        response.put("client_secret", paymentIntent.getClientSecret());
+
+        return response;
+    }
+
+
+    public String confirmPayment(String paymentIntentId, Long billId) throws StripeException {
+        Stripe.apiKey = stripeSecretKey;
+
+        PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
+        if ("succeeded".equals(paymentIntent.getStatus())) {
+            Bill bill = billRepository.findById(billId)
+                    .orElseThrow(() -> new IllegalArgumentException("Bill not found"));
+            bill.setPaid(true);
+            billRepository.save(bill);
+
+            // Update reservation status to COMPLETED if desired
+            Reservation reservation = bill.getReservation();
+            reservation.setStatus(Status.CLOSED);
+            reservationRepository.save(reservation);
+
+            return "Payment succeeded, bill updated";
+        } else {
+            throw new RuntimeException("Payment not successful");
+
+        }
+    }
+
 }

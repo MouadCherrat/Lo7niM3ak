@@ -26,4 +26,11 @@ public class BillController {
         PaymentIntent paymentIntent = billService.createPaymentIntent(paymentInfo);
         String paymentStr = paymentIntent.toJson();
         return ResponseEntity.ok(paymentStr);
-    }}
+    }
+    @PostMapping
+    public ResponseEntity<String> payBill(@RequestBody  Bill bill) {
+        String response = billService.payBill(bill);
+        return ResponseEntity.ok(response);
+    }
+
+}

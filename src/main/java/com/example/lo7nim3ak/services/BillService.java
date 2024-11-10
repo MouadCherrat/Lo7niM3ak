@@ -9,6 +9,8 @@ import com.stripe.model.PaymentIntent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -38,6 +40,10 @@ public class BillService {
     }
     public List<Bill> getAll(){
         return billRepository.findAll();
+    }
+    public String payBill(Bill bill){
+        billRepository.save(bill);
+        return " Payment succeed";
     }
 
 
