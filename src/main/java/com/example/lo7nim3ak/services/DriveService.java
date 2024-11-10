@@ -68,7 +68,7 @@ public class DriveService {
         }
     }
     public void deleteDrive (Long driveId){
-        driveRepository.deleteById(driveId); ;
+        driveRepository.deleteById(driveId);
     }
     public Optional<Drive> findById (Long driveId){
         return driveRepository.findById(driveId);
