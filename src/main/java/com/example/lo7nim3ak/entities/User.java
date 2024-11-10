@@ -48,8 +48,17 @@ public class User {
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservations;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "sender")
+    private List<Message> sentMessages;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "receiver")
+    private List<Message> receivedMessages;
 
+    public User(Long id) {
+        this.id = id;
+    }
 
 
 }
