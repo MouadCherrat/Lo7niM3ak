@@ -189,7 +189,6 @@ public class ReservationService {
             return "Payment succeeded, bill updated";
         } else {
             throw new RuntimeException("Payment not successful");
-
         }
     }
 
