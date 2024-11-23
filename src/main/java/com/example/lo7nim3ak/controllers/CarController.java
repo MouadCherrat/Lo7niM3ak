@@ -10,7 +10,6 @@ import java.util.Optional;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1")
-@CrossOrigin()
 public class CarController {
 
     private final CarService carService;

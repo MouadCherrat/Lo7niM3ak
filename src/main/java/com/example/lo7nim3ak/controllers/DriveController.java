@@ -13,7 +13,6 @@ import java.util.Optional;
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/v1")
-@CrossOrigin(value = "*")
 public class DriveController {
     private final DriveService driveService;
     @PostMapping("/drives")
@@ -44,11 +43,5 @@ public class DriveController {
     public Optional<Drive> findAllDriveByUserId(@PathVariable Long id) {
         return driveService.findAllByUserId(id);
     }
-
-
-
-
-
-
 
 }
