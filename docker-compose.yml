@@ -1,22 +1,20 @@
 version: "3.8"
 services:
 
-#  keycloak:
-#    image: quay.io/keycloak/keycloak:24.0.0
-#    container_name: Keycloak
-#    ports:
-#      - "9000:8080"
-#    environment:
-#      KEYCLOAK_ADMIN: "admin"
-#      KEYCLOAK_ADMIN_PASSWORD: "admin"
-#      KEYCLOAK_IMPORT: "/opt/keycloak/data/import/realm-export.json"
-#    command:
-#      - "start-dev"
-#    volumes:
-#      - keycloak_data:/opt/keycloak/data
-#      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
-#    networks:
-#      - db-net
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.0
+    container_name: Keycloak_lm
+    ports:
+      - "9000:8080"
+    environment:
+      KEYCLOAK_ADMIN: "admin"
+      KEYCLOAK_ADMIN_PASSWORD: "admin"
+    command:
+      - "start-dev"
+    volumes:
+      - keycloak_data:/opt/keycloak/data
+    networks:
+      - db-net
 
 
   mysql:
@@ -48,7 +46,7 @@ services:
       - db-net
 
 volumes:
-#  keycloak_data:
+  keycloak_data:
   mysql_data:
 
 networks:

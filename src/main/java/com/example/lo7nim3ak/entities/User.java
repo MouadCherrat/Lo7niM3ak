@@ -19,12 +19,12 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String password;
     private String name;
     private String firstName;
     private String email;
     private String phone;
     private String role;
+
     @JsonIgnore
     @JsonManagedReference
     @OneToMany(mappedBy = "user")
@@ -44,6 +44,7 @@ public class User {
     @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Drive> drives;
+
     @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Reservation> reservations;
@@ -59,6 +60,4 @@ public class User {
     public User(Long id) {
         this.id = id;
     }
-
-
 }
