@@ -39,11 +39,9 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin").hasAuthority("ROLE_driver")
-                        .requestMatchers("/api/user").hasAuthority("ROLE_passanger")
-                        .requestMatchers("/api/v1/user/*").permitAll()
-                        .requestMatchers("/api/v1/drives").permitAll()
+                        .requestMatchers("/api/user").hasAuthority("ROLE_passenger")
                         .requestMatchers("/api/private").authenticated()
-                        .anyRequest().authenticated()
+                        .anyRequest().permitAll()
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwtConfigurer -> jwtConfigurer.jwtAuthenticationConverter(jwtAuthenticationConverter()))

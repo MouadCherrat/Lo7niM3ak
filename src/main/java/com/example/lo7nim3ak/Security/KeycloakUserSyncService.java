@@ -79,7 +79,7 @@ public class KeycloakUserSyncService {
                 if (roles != null) {
                     for (Map<String, Object> role : roles) {
                         String roleName = (String) role.get("name");
-                        if ("driver".equals(roleName) || "passanger".equals(roleName)) {
+                        if ("driver".equals(roleName) || "passenger".equals(roleName)) {
                             rolesBuilder.append(roleName).append(",");
                         }
                     }

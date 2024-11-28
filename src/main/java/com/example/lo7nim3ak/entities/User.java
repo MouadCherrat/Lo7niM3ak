@@ -6,48 +6,40 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import java.util.List;
 
 @Entity
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     private String name;
     private String firstName;
     private String email;
     private String phone;
     private String role;
 
+    @JsonManagedReference("user-reviews")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Review> reviews;
+
     @JsonIgnore
-    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Document> documents;
 
     @JsonIgnore
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user")
-    private List<Review> reviews;
-
-    @JsonIgnore
-    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Car> cars;
 
     @JsonIgnore
-    @JsonManagedReference
     @OneToMany(mappedBy = "user")
     private List<Drive> drives;
-
-    @JsonManagedReference
-    @OneToMany(mappedBy = "user")
-    private List<Reservation> reservations;
 
     @JsonIgnore
     @OneToMany(mappedBy = "sender")
