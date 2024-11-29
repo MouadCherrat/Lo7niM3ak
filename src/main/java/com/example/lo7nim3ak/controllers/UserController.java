@@ -5,10 +5,9 @@ import com.example.lo7nim3ak.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
@@ -23,4 +22,10 @@ public class UserController {
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
+    @GetMapping("/email/{email}")
+    public ResponseEntity<User> getUserByEmail(@RequestParam String email) {
+        Optional<User> user = userService.findUserByEmail(email);
+        return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
+    }
+
 }

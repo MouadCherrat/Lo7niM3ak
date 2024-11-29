@@ -51,4 +51,4 @@ volumes:
 
 networks:
   db-net:
-    driver: bridge
+   driver: bridge

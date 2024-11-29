@@ -40,6 +40,9 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/api/admin").hasAuthority("ROLE_driver")
                         .requestMatchers("/api/user").hasAuthority("ROLE_passenger")
+                        .requestMatchers("/api/user").hasAuthority("ROLE_passanger")
+                        .requestMatchers("/api/v1/user/*").permitAll()
+                        .requestMatchers("/api/v1/drives/**").permitAll()
                         .requestMatchers("/api/private").authenticated()
                         .anyRequest().permitAll()
                 )
