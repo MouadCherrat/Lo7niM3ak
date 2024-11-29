@@ -39,7 +39,7 @@ public class KeycloakUserSyncService {
     public void syncUsersFromKeycloak() {
         String keycloakUrl = "http://localhost:9000/realms/Lo7niM3ak/protocol/openid-connect/token";
         String clientId = "Lo7niM3ak-backend";
-        String clientSecret = "LeElTXBlDPWpHSr0rV6qJV1gfuz2NqgM";
+        String clientSecret = "awu6zIBiBrj3GhC184igwr3WoUvp0SdH";
         String grantType = "client_credentials";
 
         MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();
