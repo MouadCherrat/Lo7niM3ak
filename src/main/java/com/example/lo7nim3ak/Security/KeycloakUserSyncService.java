@@ -39,7 +39,7 @@ public class KeycloakUserSyncService {
     public void syncUsersFromKeycloak() {
         String keycloakUrl = "http://localhost:9000/realms/Lo7niM3ak/protocol/openid-connect/token";
         String clientId = "Lo7niM3ak-backend";
-        String clientSecret = "awu6zIBiBrj3GhC184igwr3WoUvp0SdH";
+        String clientSecret = "LeElTXBlDPWpHSr0rV6qJV1gfuz2NqgM";
         String grantType = "client_credentials";
 
         MultiValueMap<String, String> tokenRequest = new LinkedMultiValueMap<>();
@@ -71,6 +71,10 @@ public class KeycloakUserSyncService {
                 String firstName = (String) keycloakUser.get("firstName");
                 String lastName = (String) keycloakUser.get("lastName");
 
+                Map<String, List<String>> attributes = (Map<String, List<String>>) keycloakUser.get("attributes");
+                String roleKeyk = attributes != null && attributes.containsKey("role") ? attributes.get("role").get(0) : null;
+
+
                 String rolesUrl = "http://localhost:9000/admin/realms/Lo7niM3ak/users/" + keycloakUser.get("id") + "/role-mappings/realm";
                 ResponseEntity<List> rolesResponse = restTemplate.exchange(rolesUrl, HttpMethod.GET, authRequest, List.class);
                 List<Map<String, Object>> roles = rolesResponse.getBody();
@@ -91,7 +95,7 @@ public class KeycloakUserSyncService {
                 user.setName(username);
                 user.setFirstName(firstName);
                 user.setEmail(email);
-                user.setRole(rolesString);
+                user.setRole(roleKeyk);
 
                 userRepository.save(user);
             }
