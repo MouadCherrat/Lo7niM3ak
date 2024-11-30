@@ -1,8 +1,11 @@
 package com.example.lo7nim3ak.services;
 
+import com.example.lo7nim3ak.dto.ReservationDto;
 import com.example.lo7nim3ak.entities.Bill;
 import com.example.lo7nim3ak.entities.PaymentInfo;
+import com.example.lo7nim3ak.entities.Reservation;
 import com.example.lo7nim3ak.repository.BillRepository;
+import com.example.lo7nim3ak.repository.ReservationRepository;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.PaymentIntent;
@@ -10,16 +13,16 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
 public class BillService {
     private final BillRepository billRepository;
+    private final ReservationRepository reservationRepository;
     @Value("${stripe.key.secret}")
     private String secretKey;
 
@@ -45,6 +48,25 @@ public class BillService {
         billRepository.save(bill);
         return " Payment succeed";
     }
+    public Bill createBillForReservation(ReservationDto reservationDto) {
+        if (reservationDto.getId() == null) {
+            throw new IllegalArgumentException("Reservation ID cannot be null");
+        }
+
+        Reservation reservation = reservationRepository.findById(reservationDto.getId())
+                .orElseThrow(() -> new RuntimeException("Reservation not found with ID: " + reservationDto.getId()));
+
+        Bill bill = new Bill();
+        bill.setTotalAmount(BigDecimal.valueOf(reservation.getSeats())
+                .multiply(reservation.getDrive().getPrice())
+                .setScale(2, RoundingMode.HALF_UP));
+        bill.setPaid(false);
+        bill.setBillReference(UUID.randomUUID().toString());
+        bill.setReservation(reservation);
+
+        return billRepository.save(bill);
+    }
+
 
 
 }
