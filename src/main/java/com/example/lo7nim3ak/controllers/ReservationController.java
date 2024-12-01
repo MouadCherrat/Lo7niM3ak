@@ -1,62 +1,45 @@
 package com.example.lo7nim3ak.controllers;
 
-
 import com.example.lo7nim3ak.dto.ReservationDto;
-import com.example.lo7nim3ak.entities.Bill;
-import com.example.lo7nim3ak.entities.PaymentInfo;
 import com.example.lo7nim3ak.entities.Reservation;
-import com.example.lo7nim3ak.services.BillService;
 import com.example.lo7nim3ak.services.ReservationService;
 import com.stripe.exception.StripeException;
-import com.stripe.model.PaymentIntent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
-@RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/reservations")
+@RequiredArgsConstructor
 public class ReservationController {
+
     private final ReservationService reservationService;
-    private final BillService billService;
 
     @PostMapping
-    public Reservation addReservation(@RequestBody ReservationDto reservationDto) {
-        return reservationService.createReservation(reservationDto);
+    public ResponseEntity<Reservation> createReservation(@RequestBody ReservationDto reservationDto) {
+        Reservation reservation = reservationService.createReservation(reservationDto);
+        return ResponseEntity.ok(reservation);
     }
 
-    @PutMapping("/accept/{reservationId}")
-    public Reservation acceptReservation(@PathVariable Long reservationId) {
-        return reservationService.acceptReservation(reservationId);
-    }
-
-    @PutMapping("/refuse/{reservationId}")
-    public Reservation refuseReservation(@PathVariable Long reservationId) {
-        return reservationService.refuseReservation(reservationId);
-    }
-
-    @PutMapping("/cancel/{reservationId}")
-    public Reservation cancelReservation(@PathVariable Long reservationId) {
-        return reservationService.cancelReservation(reservationId);
-    }
-
-    @PostMapping("/pay-bill")
-    public ResponseEntity<String> payBill(@RequestBody Bill bill) {
-        String response = billService.payBill(bill);
-        return ResponseEntity.ok(response);
-    }
-    @PostMapping("/create-payment-intent/{billId}")
-    public ResponseEntity<Map<String, String>> createPaymentIntent(@PathVariable Long billId) throws StripeException {
-        Map<String, String> response = reservationService.createPaymentIntent(billId);
+    @PostMapping("/{reservationId}/payment-intent")
+    public ResponseEntity<Map<String, String>> createPaymentIntent(@PathVariable Long reservationId) throws StripeException {
+        Map<String, String> response = reservationService.createPaymentIntent(reservationId);
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/confirm-payment")
-    public ResponseEntity<String> confirmPayment(@RequestParam String paymentIntentId, @RequestParam Long billId) throws StripeException {
-        String result = reservationService.confirmPayment(paymentIntentId, billId);
-        return ResponseEntity.ok(result);
+    @PostMapping("/{reservationId}/confirm-payment")
+    public ResponseEntity<Map<String, String>> confirmPayment(
+            @PathVariable Long reservationId,
+            @RequestParam String paymentIntentId) throws StripeException {
+        String result = reservationService.confirmPayment(paymentIntentId, reservationId);
+
+        // Retournez une réponse JSON
+        Map<String, String> response = new HashMap<>();
+        response.put("message", result);
+        return ResponseEntity.ok(response);
     }
 
 }
