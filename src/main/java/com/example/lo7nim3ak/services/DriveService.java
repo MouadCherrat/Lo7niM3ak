@@ -73,10 +73,8 @@ public class DriveService {
     public Optional<Drive> findById (Long driveId){
         return driveRepository.findById(driveId);
     }
-    public Optional<Drive> findByUserId (Long userId){
-        return driveRepository.findByUserId(userId);
-    }
-    public Optional<Drive> findAllByUserId (Long userId){
+
+    public List<Drive> findAllByUserId (Long userId){
         return driveRepository.findAllByUserId(userId);
     }
 

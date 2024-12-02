@@ -1,6 +1,7 @@
 package com.example.lo7nim3ak.repository;
 
 import com.example.lo7nim3ak.entities.Message;
+import com.example.lo7nim3ak.entities.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -17,4 +18,9 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
 
     @Query("SELECT m FROM Message m WHERE m.isRead = false AND m.sender.id = :senderId AND m.receiver.id = :receiverId")
     List<Message> findUnreadMessagesBetweenUsers(@Param("senderId") Long senderId, @Param("receiverId") Long receiverId);
+
+    @Query("SELECT DISTINCT CASE WHEN m.sender.id = :userId THEN m.receiver.id ELSE m.sender.id END " +
+            "FROM Message m WHERE m.sender.id = :userId OR m.receiver.id = :userId")
+    List<Long> findUniqueUserIdsByUserId(@Param("userId") Long userId);
+
 }

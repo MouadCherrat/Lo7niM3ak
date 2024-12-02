@@ -6,12 +6,12 @@ import com.example.lo7nim3ak.entities.Drive;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface DriveRepository extends JpaRepository<Drive, Long> {
-    Optional<Drive> findByUserId (Long userId);
-    Optional<Drive> findAllByUserId (Long userId);
+    List<Drive> findAllByUserId (Long userId);
 
 
 }

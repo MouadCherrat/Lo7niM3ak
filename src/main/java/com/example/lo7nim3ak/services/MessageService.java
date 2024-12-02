@@ -1,9 +1,11 @@
 package com.example.lo7nim3ak.services;
 
 import com.example.lo7nim3ak.dto.MessageDto;
+import com.example.lo7nim3ak.dto.UserDto;
 import com.example.lo7nim3ak.entities.Message;
 import com.example.lo7nim3ak.entities.User;
 import com.example.lo7nim3ak.repository.MessageRepository;
+import com.example.lo7nim3ak.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 public class MessageService {
 
     private final MessageRepository messageRepository;
+    private final UserRepository userRepository;
+
 
     public Message sendMessage(Long senderId, Long receiverId, String content) {
         Message message = new Message();
@@ -52,4 +56,13 @@ public class MessageService {
                 message.getIsRead()
         );
     }
+
+    public List<UserDto> getConversationsByUserId(Long userId) {
+        List<Long> userIds = messageRepository.findUniqueUserIdsByUserId(userId);
+        List<User> users = userRepository.findAllById(userIds);
+        return users.stream()
+                .map(user -> new UserDto(user.getId(), user.getFirstName(), user.getName(), user.getEmail()))
+                .collect(Collectors.toList());
+    }
+
 }

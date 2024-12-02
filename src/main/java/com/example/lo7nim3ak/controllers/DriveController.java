@@ -1,10 +1,13 @@
 package com.example.lo7nim3ak.controllers;
 
+import com.example.lo7nim3ak.dto.ReservationDto;
 import com.example.lo7nim3ak.dto.request.RequestDrive;
 import com.example.lo7nim3ak.dto.response.ResponseDrive;
 import com.example.lo7nim3ak.entities.Drive;
 import com.example.lo7nim3ak.services.DriveService;
+import com.example.lo7nim3ak.services.ReservationService;
 import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,14 +15,15 @@ import java.util.Optional;
 
 @RestController
 @AllArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/api/v1/drives")
 public class DriveController {
     private final DriveService driveService;
-    @PostMapping("/drives")
+    private final ReservationService reservationService;
+    @PostMapping
     public ResponseDrive addDrive(@RequestBody RequestDrive request) {
         return driveService.createDrive(request);
     }
-    @GetMapping("/drives")
+    @GetMapping
     public List<ResponseDrive> listDrives() {
         return driveService.getAllDrives();
     }
@@ -35,13 +39,13 @@ public class DriveController {
     public Optional<Drive> findDriveById(@PathVariable Long id) {
         return driveService.findById(id);
     }
-    @GetMapping("/findDriveByAccountId/{id}")
-    public Optional<Drive> findDriveByUserId(@PathVariable Long id) {
-        return driveService.findByUserId(id);
-    }
     @GetMapping("/findListDriveByUserId/{id}")
-    public Optional<Drive> findAllDriveByUserId(@PathVariable Long id) {
-        return driveService.findAllByUserId(id);
+    public List<Drive> findAllDriveByUserId(@PathVariable Long id) {
+        return driveService.findAllByUserId(id);}
+    @GetMapping("/drive/{driveId}/reservations")
+    public ResponseEntity<List<ReservationDto>> getReservationsByDriveId(@PathVariable Long driveId) {
+        List<ReservationDto> reservations = reservationService.getReservationsByDriveId(driveId);
+        return ResponseEntity.ok(reservations);
     }
 
 }

@@ -1,6 +1,7 @@
 package com.example.lo7nim3ak.controllers;
 
 import com.example.lo7nim3ak.dto.MessageDto;
+import com.example.lo7nim3ak.dto.UserDto;
 import com.example.lo7nim3ak.entities.Message;
 import com.example.lo7nim3ak.services.MessageService;
 import lombok.AllArgsConstructor;
@@ -47,4 +48,10 @@ public class MessageController {
         messageService.markMessagesAsRead(senderId, receiverId);
         return ResponseEntity.ok().build();
     }
+    @GetMapping("/my-conversations/{userId}")
+    public ResponseEntity<List<UserDto>> getMyConversations(@PathVariable Long userId) {
+        List<UserDto> users = messageService.getConversationsByUserId(userId);
+        return ResponseEntity.ok(users);
+    }
+
 }

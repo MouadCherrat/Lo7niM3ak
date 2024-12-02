@@ -34,7 +34,7 @@ public class Drive {
     @JoinColumn(name = "id_driver")
     private User user;
 
-    @JsonManagedReference
+    @JsonIgnore
     @OneToMany(mappedBy = "drive")
     private List<Reservation> reservations;
 
