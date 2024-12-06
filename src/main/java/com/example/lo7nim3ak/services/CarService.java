@@ -34,7 +34,7 @@ public class CarService {
     public Optional<Car> findById(Long id) {
         return carRepository.findById(id);
     }
-    public Optional<Car> findByUserId(Long userId) {
+    public List<Car> findByUserId(Long userId) {
         return carRepository.findByUserId(userId);
     }
 

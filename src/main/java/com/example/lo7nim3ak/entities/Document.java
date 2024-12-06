@@ -16,7 +16,8 @@ public class Document {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String title;
-    private String url;
+    @Lob
+    private byte[] content;
     @ManyToOne
     @JsonBackReference
     @JoinColumn(name = "id_driver")

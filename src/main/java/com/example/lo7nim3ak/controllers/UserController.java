@@ -27,5 +27,16 @@ public class UserController {
         Optional<User> user = userService.findUserByEmail(email);
         return user.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
+    @PatchMapping("/role")
+    public ResponseEntity<User> updateUserRole(@RequestParam String newRole, @RequestParam String email) {
+        Optional<User> user = userService.findUserByEmail(email);
+
+        if (user.isPresent()) {
+            User updatedUser = userService.updateUserRole(user.get().getId(), newRole);
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
 }

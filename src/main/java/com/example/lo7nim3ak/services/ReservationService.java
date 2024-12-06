@@ -95,7 +95,6 @@ public class ReservationService {
             Reservation reservation = bill.getReservation();
             reservation.setStatus(Status.CLOSED);
             reservationRepository.save(reservation);
-
             return "Payment confirmed, reservation updated to CONFIRMED.";
         } else {
             throw new RuntimeException("Payment not successful.");

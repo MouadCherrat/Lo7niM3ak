@@ -1,5 +1,6 @@
 package com.example.lo7nim3ak.controllers;
 
+import com.example.lo7nim3ak.dto.ReviewDto;
 import com.example.lo7nim3ak.entities.Review;
 import com.example.lo7nim3ak.services.ReviewService;
 import lombok.AllArgsConstructor;
@@ -44,5 +45,10 @@ public class ReviewController {
     public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
         return ResponseEntity.noContent().build();
+    }
+    @GetMapping("/users/{userId}")
+    public ResponseEntity<List<ReviewDto>> getReviewsByUser(@PathVariable Long userId) {
+        List<ReviewDto> reviews = reviewService.getReviewsByUser(userId);
+        return ResponseEntity.ok(reviews);
     }
 }

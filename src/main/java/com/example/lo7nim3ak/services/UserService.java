@@ -17,4 +17,16 @@ public class UserService {
     public Optional<User> findUserByEmail(String email) {
         return userRepository.findByEmail(email);
     }
+    public User updateUserRole(Long userId, String newRole) {
+        Optional<User> existingUser = userRepository.findById(userId);
+
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+            user.setRole(newRole);
+            return userRepository.save(user);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
 }
