@@ -32,17 +32,17 @@ public class ReservationController {
         return ResponseEntity.ok(response);
     }
 
-    @PostMapping("/{reservationId}/confirm-payment")
-    public ResponseEntity<Map<String, String>> confirmPayment(
-            @PathVariable Long reservationId,
-            @RequestParam String paymentIntentId) throws StripeException {
-        String result = reservationService.confirmPayment(paymentIntentId, reservationId);
-
-        // Retournez une réponse JSON
-        Map<String, String> response = new HashMap<>();
-        response.put("message", result);
-        return ResponseEntity.ok(response);
-    }
+//    @PostMapping("/{reservationId}/confirm-payment")
+//    public ResponseEntity<Map<String, String>> confirmPayment(
+//            @PathVariable Long reservationId,
+//            @RequestParam String paymentIntentId) throws StripeException {
+//        String result = reservationService.confirmPayment(paymentIntentId, reservationId);
+//
+//        // Retournez une réponse JSON
+//        Map<String, String> response = new HashMap<>();
+//        response.put("message", result);
+//        return ResponseEntity.ok(response);
+//    }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<List<ReservationDto>> getReservationsByUserId(@PathVariable Long userId) {

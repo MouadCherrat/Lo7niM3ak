@@ -67,39 +67,52 @@ public class ReservationService {
 
     public Map<String, String> createPaymentIntent(Long reservationId) throws StripeException {
         Stripe.apiKey = stripeSecretKey;
+
         Bill bill = billRepository.findByReservationId(reservationId)
                 .orElseThrow(() -> new IllegalArgumentException("Bill not found for reservation ID: " + reservationId));
+
         Map<String, Object> params = new HashMap<>();
-        params.put("amount", bill.getTotalAmount().multiply(BigDecimal.valueOf(100)).intValue()); // Convert to cents
-        params.put("currency", "usd");
+        params.put("amount", bill.getTotalAmount().multiply(BigDecimal.valueOf(100)).intValue()); // Convertir en cents
+        params.put("currency", "usd"); // Devise
         params.put("description", "Payment for Reservation ID: " + reservationId);
         params.put("payment_method_types", List.of("card"));
+
         PaymentIntent paymentIntent = PaymentIntent.create(params);
+
         Map<String, String> response = new HashMap<>();
         response.put("client_secret", paymentIntent.getClientSecret());
         response.put("payment_intent_id", paymentIntent.getId());
+        bill.setPaid(true);
+        Reservation reservation = bill.getReservation();
+        reservation.setStatus(Status.CLOSED);
+        reservationRepository.save(reservation);
+
+
         return response;
     }
 
-    public String confirmPayment(String paymentIntentId, Long reservationId) throws StripeException {
-        Stripe.apiKey = stripeSecretKey;
-        PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
-        if ("succeeded".equals(paymentIntent.getStatus())) {
-            Bill bill = billRepository.findByReservationId(reservationId)
-                    .orElseThrow(() -> new IllegalArgumentException("Bill not found for reservation ID: " + reservationId));
-            // Mark bill as paid
-            bill.setPaid(true);
-            billRepository.save(bill);
 
-            // Update reservation status
-            Reservation reservation = bill.getReservation();
-            reservation.setStatus(Status.CLOSED);
-            reservationRepository.save(reservation);
-            return "Payment confirmed, reservation updated to CONFIRMED.";
-        } else {
-            throw new RuntimeException("Payment not successful.");
-        }
-    }
+
+//    public String confirmPayment(String paymentIntentId, Long reservationId) throws StripeException {
+//        Stripe.apiKey = stripeSecretKey;
+//        PaymentIntent paymentIntent = PaymentIntent.retrieve(paymentIntentId);
+//        if ("succeeded".equals(paymentIntent.getStatus())) {
+//            Bill bill = billRepository.findByReservationId(reservationId)
+//                    .orElseThrow(() -> new IllegalArgumentException("Bill not found for reservation ID: " + reservationId));
+//            // Mark bill as paid
+//            bill.setPaid(true);
+//            billRepository.save(bill);
+//
+//            // Update reservation status
+//            Reservation reservation = bill.getReservation();
+//            reservation.setStatus(Status.CLOSED);
+//            reservationRepository.save(reservation);
+//
+//            return "Payment confirmed, reservation updated to CONFIRMED.";
+//        } else {
+//            throw new RuntimeException("Payment not successful.");
+//        }
+//    }
 
     public List<ReservationDto> getReservationsByUserId(Long userId) {
         List<Reservation> reservations = reservationRepository.findByUserId(userId);
