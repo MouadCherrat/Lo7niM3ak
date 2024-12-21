@@ -24,6 +24,7 @@ public class User {
     private String email;
     private String phone;
     private String role;
+    private String password;
 
     @JsonManagedReference("user-reviews")
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
